@@ -26,7 +26,7 @@ The UI shows baseline vs. rewrite verdicts side-by-side; click any row for the f
 Requires Node ≥ 18.
 
 ```bash
-git clone https://github.com/dan-wellington/dan-wellington.git
+git clone https://github.com/dan-wellington/facts-grounding-demo.git
 cd dan-wellington
 npm install
 cp .env.example .env
