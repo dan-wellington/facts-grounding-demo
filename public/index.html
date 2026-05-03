@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tularni · FACTS Hallucination Suppression</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">▣</span>
+    <span class="brand-name">TULARNI</span>
+    <span class="brand-sub">· FACTS HALLUCINATION SUPPRESSION</span>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="run">RUN</button>
+    <button class="tab" data-tab="history">HISTORY</button>
+  </nav>
+  <div class="status" id="status-pill">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">CHECKING…</span>
+  </div>
+</header>
+
+<!-- ─────────────────────────── RUN VIEW ─────────────────────────── -->
+<main class="view" id="view-run">
+
+  <!-- Left: configuration -->
+  <aside class="panel panel-config">
+    <h2 class="panel-title">RUN CONFIG <span class="panel-title-sub">be mindful of token costs!</span></h2>
+
+    <div class="field">
+      <label>Architecture model</label>
+      <select id="cfg-model">
+        <option value="claude-haiku-4-5-20251001">claude-haiku-4-5-20251001</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Gate stages <span class="hint">(c2 always on)</span></label>
+      <div class="seg" id="cfg-gate">
+        <button type="button" class="seg-opt active" data-gate="TTT">TTT<span class="seg-sub">full</span></button>
+        <button type="button" class="seg-opt" data-gate="TTF">TTF<span class="seg-sub">no confront</span></button>
+        <button type="button" class="seg-opt" data-gate="FTT">FTT<span class="seg-sub">no parametric</span></button>
+        <button type="button" class="seg-opt" data-gate="FTF">FTF<span class="seg-sub">grounded only</span></button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>primary_threshold <span class="val" id="lbl-pt">50</span></label>
+        <input type="range" id="cfg-pt" min="0" max="100" step="1" value="50">
+      </div>
+      <div class="field">
+        <label>gap_fill_trigger <span class="val" id="lbl-gft">0.40</span></label>
+        <input type="range" id="cfg-gft" min="0" max="1" step="0.05" value="0.40">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="check">
+        <input type="checkbox" id="cfg-revert" checked>
+        <span>revert_layer_enabled</span>
+      </label>
+    </div>
+
+    <div class="field" id="revert-row">
+      <label>reversion_knob <span class="val" id="lbl-rc">0.30</span></label>
+      <input type="range" id="cfg-rc" min="0" max="1" step="0.05" value="0.30">
+    </div>
+
+    <div class="field">
+      <label>max_changes_for_reversion <span class="val" id="lbl-mcr">1</span></label>
+      <input type="range" id="cfg-mcr" min="0" max="10" step="1" value="1">
+    </div>
+
+    <div class="field">
+      <label>max_concurrent_agents</label>
+      <input type="number" id="cfg-mc" min="1" max="50" step="1" value="10">
+    </div>
+
+    <div class="field">
+      <label>Examples</label>
+      <div class="seg" id="cfg-pick-mode">
+        <button type="button" class="seg-opt active" data-pick="n">first N</button>
+        <button type="button" class="seg-opt" data-pick="ids">specific IDs</button>
+      </div>
+    </div>
+
+    <div class="field" id="field-n">
+      <label>n_examples <span class="val" id="lbl-n">1</span></label>
+      <div class="n-row">
+        <input type="range"  id="cfg-n"     min="1" max="50" step="1" value="1">
+        <input type="number" id="cfg-n-num" min="1" max="50" step="1" value="1">
+      </div>
+    </div>
+
+    <div class="field" id="field-seed">
+      <label>seed <span class="hint">(optional · same seed → same N ids)</span></label>
+      <input type="number" id="cfg-seed" placeholder="leave blank for corpus order" min="0" step="1">
+    </div>
+
+    <div class="field hidden" id="field-ids">
+      <label>example_ids <span class="hint">(comma-separated)</span></label>
+      <input type="text" id="cfg-ids" placeholder="725, 128, 468">
+      <div class="hint" id="ids-feedback"></div>
+    </div>
+
+    <div class="field">
+      <label class="check">
+        <input type="checkbox" id="cfg-surgical" checked>
+        <span>surgical_rewrite_enabled</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="check">
+        <input type="checkbox" id="cfg-abstain" checked>
+        <span>gap_fill_abstain_on_format</span>
+      </label>
+    </div>
+
+    <button id="btn-run" class="btn-primary">▶ START RUN</button>
+    <button id="btn-cancel" class="btn-ghost hidden">■ STOP</button>
+
+  </aside>
+
+  <!-- Right: live results -->
+  <section class="panel panel-results">
+
+    <div class="headline" id="headline">
+      <div class="metric">
+        <div class="metric-num" id="m-baseline">—</div>
+        <div class="metric-lbl">BASELINE PASS</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num" id="m-rewrite">—</div>
+        <div class="metric-lbl">REWRITE PASS</div>
+      </div>
+      <div class="metric metric-good">
+        <div class="metric-num" id="m-flips">—</div>
+        <div class="metric-lbl">FLIPS</div>
+      </div>
+      <div class="metric metric-bad">
+        <div class="metric-num" id="m-damaged">—</div>
+        <div class="metric-lbl">DAMAGED</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num" id="m-reverts">—</div>
+        <div class="metric-lbl">REVERTS</div>
+      </div>
+    </div>
+
+    <div class="run-meta" id="run-meta">
+      <span class="run-meta-empty">No run yet. Configure on the left and hit START RUN.</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="results">
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>words</th>
+            <th>request</th>
+            <th class="num">claims</th>
+            <th class="num">flagged</th>
+            <th class="num">gap</th>
+            <th>reverted</th>
+            <th>baseline</th>
+            <th>architecture intervention</th>
+            <th>outcome</th>
+          </tr>
+        </thead>
+        <tbody id="results-body">
+          <tr class="empty"><td colspan="10">— no rows yet —</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- ─────────────────────────── HISTORY VIEW ─────────────────────────── -->
+<main class="view hidden" id="view-history">
+  <section class="panel panel-history">
+    <h2 class="panel-title">PAST RUNS</h2>
+    <div id="history-list"><span class="hint">loading…</span></div>
+  </section>
+</main>
+
+<!-- ─────────────────────────── ACTIVE-WORKER CORNER ─────────────────────────── -->
+<div class="workers-corner" id="workers-corner">
+  <span class="workers-corner-label">ACTIVE</span>
+</div>
+
+<!-- ─────────────────────────── DETAIL DRAWER ─────────────────────────── -->
+<aside class="drawer hidden" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-id" id="drw-id"></div>
+      <div class="drawer-sub" id="drw-sub"></div>
+    </div>
+    <button class="btn-ghost" id="drw-close">CLOSE ✕</button>
+  </div>
+  <div class="drawer-body" id="drw-body"></div>
+</aside>
+
+<!-- ─────────────────────────── CONFIRM DIALOG ─────────────────────────── -->
+<div class="modal hidden" id="modal">
+  <div class="modal-card">
+    <h3 id="modal-title"></h3>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-cancel">CANCEL</button>
+      <button class="btn-primary" id="modal-confirm">PROCEED</button>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

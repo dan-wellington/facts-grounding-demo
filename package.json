@@ -1,0 +1,21 @@
+{
+  "name": "tularni-facts-hallucination-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive demo: hallucination suppression on Google's FACTS Grounding benchmark — atomic-claim gating, surgical rewrite, gap-fill, paper-aligned judges.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
+    "dotenv": "^16.4.5",
+    "express": "^5.2.1",
+    "openai": "^4.77.0"
+  }
+}
