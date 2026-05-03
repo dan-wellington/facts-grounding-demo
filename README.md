@@ -4,6 +4,8 @@ An interactive demo that reduces ungrounded ("hallucinated") content in LLM resp
 
 Built to test atomization and reconstruction using some clever confidence scoring pipelines. It is challenging to improve the scoring upon the raw model because the model is very good at detecting when it may get a response wrong but not great at correcting it.  The demo runs locally as a Node/Express server with a vanilla-JS web UI.
 
+**** BE VERY MINDFUL OF TOKEN COSTS. THIS ARCHITECTURE USES MANY CALLS to MODELS FOR EACH QUESTION ******  If you sent N large like a 100 or more you can blow through $100s of token costs in an hour or two.  
+
 ---
 
 ## What it does
