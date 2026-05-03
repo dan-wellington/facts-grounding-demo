@@ -27,7 +27,7 @@ Requires Node ≥ 18.
 
 ```bash
 git clone https://github.com/dan-wellington/facts-grounding-demo.git
-cd dan-wellington
+cd facts-grounding-demo
 npm install
 cp .env.example .env
 # Fill in your own keys in .env:
