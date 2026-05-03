@@ -1,6 +1,6 @@
 # Tularni — FACTS Demo
 
- ![demo](docs/screenshot.png)
+ ![demo](docs/snapshot.png)
 
 An interactive demo that reduces ungrounded ("hallucinated") content in LLM responses on the [Google FACTS Grounding benchmark](https://www.kaggle.com/datasets/deepmind/facts-grounding-benchmark). The pipeline gates each atomic claim against the source document, surgically rewrites the response when claims fail, and judges the result against a paper-aligned eligibility panel.
 
