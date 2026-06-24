@@ -2,7 +2,7 @@
 
  ![demo](docs/snapshot.png)
 
-An interactive demo that reduces ungrounded ("hallucinated") content in LLM responses on the [Google FACTS Grounding benchmark] (https://deepmind.google/blog/facts-grounding-a-new-benchmark-for-evaluating-the-factuality-of-large-language-models/)
+An interactive demo that reduces ungrounded ("hallucinated") content in LLM responses on the Google FACTS Grounding benchmark.  
 The pipeline gates each atomic claim against the source document, surgically rewrites the response when claims fail, and judges the result against a paper-aligned eligibility panel.
 
 Built to test atomization and reconstruction using some clever confidence scoring pipelines. It is challenging to improve the scoring upon the raw model because the model is very good at detecting when it may get a response wrong but not great at correcting it.  The demo runs locally as a Node/Express server with a vanilla-JS web UI.
