@@ -125,6 +125,6 @@ The architecture has been tuned against several known failure modes:
 
 ## Data and license
 
-The benchmark data file `facts_grounding_public.json` is from Google DeepMind's public FACTS Grounding release. See [the dataset card](https://www.kaggle.com/datasets/deepmind/facts-grounding-benchmark) for its license terms.
+The benchmark data file `facts_grounding_public.json` is from Google DeepMind's public FACTS Grounding release. 
 
 This demo's source code is MIT-licensed (see `LICENSE`).
